@@ -1,0 +1,31 @@
+<div class="clr-col-12">
+  <h1>Crud</h1>
+</div>
+
+<div class="clr-col-12 clr-col-md-8 clr-col-lg-6 clr-col-xl-4">
+  <form clrForm [formGroup]="crudForm">
+
+    <clr-input-container>
+      <label>Name</label>
+      <input clrInput type="text" placeholder="Enter name" formControlName="name"/>
+      <clr-control-error>Required field</clr-control-error>
+    </clr-input-container>
+
+    <clr-input-container>
+      <label>Website</label>
+      <input clrInput type="text" placeholder="Enter website" formControlName="website"/>
+      <clr-control-error *clrIfError="'required'">Website is required!</clr-control-error>
+      <clr-control-error *clrIfError="'pattern'">Please choose a valid URL!</clr-control-error>
+    </clr-input-container>
+
+    <div>
+      <button class="btn btn-primary" type="submit" (click)="saveWebsite()">
+        SAVE
+      </button>
+      <button class="btn" type="button" (click)="crudForm.reset()">
+        RESET
+      </button>
+    </div>
+
+  </form>
+</div>

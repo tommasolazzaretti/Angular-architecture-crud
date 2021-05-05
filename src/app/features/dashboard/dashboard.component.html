@@ -1,0 +1,26 @@
+<div class="clr-col-12">
+  <h1 class="clr-display-block">Dashboard</h1>
+
+  <button class="btn btn-info" (click)="goToCrud()">
+    CREATE NEW
+  </button>
+
+</div>
+
+<div class="clr-col-12 clr-row">
+  <div *ngFor="let website of websites$ | async" class="clr-col-12 clr-col-md-6 clr-col-lg-4 clr-col-xl-3">
+    <app-item-card
+      [website]="website"
+      (confirm)="goToCrud($event.id)"
+      (delete)="handleDelete($event.website)">
+    </app-item-card>
+  </div>
+</div>
+
+<app-confirm-modal
+  #modal
+  [title]="'Confirm Operation'"
+  [isOpen]="isOpen"
+  (confirm)="confirmDelete(modal.item.id)"
+  (cancel)="isOpen = false"
+></app-confirm-modal>

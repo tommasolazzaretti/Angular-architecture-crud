@@ -1,0 +1,24 @@
+{
+  "blocklist": [
+    {
+      "id": 1,
+      "name": "Blocklist entry 1",
+      "website": "www.acme.com"
+    },
+    {
+      "id": 2,
+      "name": "Blocklist entry 2",
+      "website": "www.malicious.site"
+    },
+    {
+      "id": 3,
+      "name": "update item 2",
+      "website": "www.google.com"
+    },
+    {
+      "name": "TEST INSERT",
+      "website": "http://www.test.com",
+      "id": 4
+    }
+  ]
+}
