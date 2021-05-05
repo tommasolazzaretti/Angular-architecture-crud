@@ -5,13 +5,6 @@ import {Observable} from 'rxjs';
 import {Website} from '../../global/model/website';
 import {Router} from '@angular/router';
 import {ConfirmModalComponent} from '../../global/components/confirm-modal/confirm-modal.component';
-import {select, Store} from '@ngrx/store';
-import {fromWebsiteActions} from '../../store/actions/website.actions';
-import {selectAllWebsites} from '../../store/selectors/website.selector';
-
-class HomeState {
-  items: Website[];
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -22,18 +15,15 @@ class HomeState {
 export class DashboardComponent implements OnInit {
 
   @ViewChild('modal') modal: ConfirmModalComponent;
-  websites$: Observable<Website[]> = this.store.pipe(select(selectAllWebsites));
+  websites$: Observable<Website[]>;
   isOpen = false;
 
-  constructor(
-    public auth: AuthService,
-    private blockListService: BlocklistService,
-    private router: Router,
-    private store: Store<HomeState>) {
+  constructor(public auth: AuthService, private blockListService: BlocklistService, private router: Router) {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(fromWebsiteActions.loadWebsites());
+    this.websites$ = this.blockListService.allElements;
+    this.blockListService.getListOfElements();
   }
 
   goToCrud(id?: string): void {
@@ -47,7 +37,7 @@ export class DashboardComponent implements OnInit {
   }
 
   confirmDelete(id: string): void {
-    this.store.dispatch(fromWebsiteActions.deleteWebsite({id}));
+    this.blockListService.deleteElement(id);
     this.isOpen = false;
   }
 

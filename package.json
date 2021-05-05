@@ -22,18 +22,13 @@
     "@angular/platform-browser-dynamic": "~11.2.9",
     "@angular/router": "~11.2.9",
     "@auth0/auth0-angular": "^1.4.0",
+    "@cds/city": "^1.1.0",
+    "@cds/core": "^5.1.1",
     "@clr/angular": "5.1.1",
-    "@ngrx/effects": "^11.0.1",
-    "@ngrx/entity": "^11.0.1",
-    "@ngrx/store": "^11.0.1",
-    "@ngrx/data": "^11.0.1",
-    "@ngrx/store-devtools": "^11.0.1",
-    "lodash": "^4.17.21",
+    "@clr/ui": "5.1.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
-    "zone.js": "~0.11.3",
-    "@clr/ui": "5.1.1",
-    "@cds/core": "5.1.1"
+    "zone.js": "~0.11.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1102.8",

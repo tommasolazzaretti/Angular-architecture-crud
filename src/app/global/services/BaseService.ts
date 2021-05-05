@@ -1,10 +1,6 @@
-import {Observable} from 'rxjs';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
-
-const httpOptions = {
-  headers: new HttpHeaders({'Content-Type': 'application/json'})
-};
 
 /**
  * base class service, contains all the basic operations of
@@ -23,27 +19,89 @@ export class BaseService<T> {
    * @protected
    */
   protected url = environment.urlService;
+  /**
+   * list like an observable return the complete list of elements
+   * auto-update on save, update and delete
+   * @protected
+   */
+  protected elementsList = new BehaviorSubject<T[]>([]);
+  /**
+   * store our data in memory
+   * @protected
+   */
+  protected dataStore: { elementsList: T[] } = {elementsList: []};
+
+  /**
+   * http si an httpClient angular
+   * serviceUrl is a parameter passed by the service that implements the basic service
+   * @param http
+   * @param serviceUrl
+   */
   constructor(protected http: HttpClient, protected serviceUrl: string) {
   }
 
-  loadItemList(): Observable<T[]> {
-    return this.http.get<T[]>(`http://localhost:3000/${(this.serviceUrl)}`);
+  /**
+   * example : list$: Observable<T[]> = blockListService.allElements
+   * return the all elements like Observable
+   */
+  get allElements(): Observable<T[]> {
+    return this.elementsList.asObservable();
   }
 
-  getSingleItem(id: string): Observable<T> {
-    return this.http.get<T>(`http://localhost:3000/${this.serviceUrl}/${id}`);
+  /**
+   * simple http GET all elements
+   */
+  getListOfElements(): void {
+    this.http.get<T[]>(`${(this.url)}/${(this.serviceUrl)}`).subscribe(
+      data => {
+        this.dataStore.elementsList = data;
+        this.elementsList.next(Object.assign({}, this.dataStore).elementsList);
+      },
+      error => console.log(`Could not getAll element List of ${(this.serviceUrl)}.`)
+    );
   }
 
-  deleteItem(id: string): Observable<any> {
-    return this.http.delete(`http://localhost:3000/${this.serviceUrl}/${id}`);
+  /**
+   * simple http DELETE by ID
+   */
+  deleteElement(id: string): void {
+    this.http.delete(`${(this.url)}/${(this.serviceUrl)}/${id}`).subscribe(
+      response => {
+        this.dataStore.elementsList.forEach((element: any, i) => {
+          if (element?.id === id) {
+            this.dataStore.elementsList.splice(i, 1);
+          }
+        });
+        this.elementsList.next(Object.assign({}, this.dataStore).elementsList);
+      },
+      error => console.log(`Could not delete element with id: ${id} for ${(this.serviceUrl)}.`)
+    );
   }
 
-  addItem(item: any): Observable<T> {
-    console.log(' item save or update ', item);
-    if (item?.id) {
-      return this.http.patch<T>(`http://localhost:3000/${this.serviceUrl}/${item?.id}`, item, httpOptions);
+  /**
+   * save or update the new element
+   */
+  saveOrUpdateElement(element: any): void {
+    if (element.id) {
+      this.http.patch<T>(`${(this.url)}/${(this.serviceUrl)}/${element.id}`, element).subscribe(
+        (data: any) => {
+          this.dataStore.elementsList.forEach((item: any, i) => {
+            if (item.id === data.id) {
+              this.dataStore.elementsList[i] = data;
+            }
+          });
+          this.elementsList.next(Object.assign({}, this.dataStore).elementsList);
+        },
+        error => console.log(`Could not update ${(this.serviceUrl)}.`)
+      );
     } else {
-      return this.http.post<T>(`http://localhost:3000/${this.serviceUrl}`, item, httpOptions);
+      this.http.post<T>(`${(this.url)}/${(this.serviceUrl)}`, element).subscribe(
+        data => {
+          this.dataStore.elementsList.push(data);
+          this.elementsList.next(Object.assign({}, this.dataStore).elementsList);
+        },
+        error => console.log(`Could not save ${(this.serviceUrl)}.`)
+      );
     }
   }
 

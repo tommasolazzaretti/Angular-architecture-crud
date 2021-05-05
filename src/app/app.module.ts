@@ -9,15 +9,6 @@ import {ClarityModule} from '@clr/angular';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HeaderModule} from './global/components/header/header.module';
 import {HttpErrorInterceptor} from './global/utils/http-interceptor';
-import {WEBSITE_FEATURE_KEY} from './store/reducers/website.reducer';
-import {StoreModule} from '@ngrx/store';
-import {EffectsModule} from '@ngrx/effects';
-import {REDUCER_TOKEN} from './store/reducers';
-import {websiteEffects} from './store/effects';
-
-export interface AppState {
-  [WEBSITE_FEATURE_KEY]: any;
-}
 
 @NgModule({
   declarations: [
@@ -38,8 +29,6 @@ export interface AppState {
         ],
       },
     }),
-    StoreModule.forRoot(REDUCER_TOKEN),
-    EffectsModule.forRoot([...websiteEffects]),
     AppRoutingModule,
     ClarityModule,
     BrowserAnimationsModule,

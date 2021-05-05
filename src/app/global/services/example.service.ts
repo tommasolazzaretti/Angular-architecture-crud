@@ -4,7 +4,7 @@ import {environment} from '../../../environments/environment';
 import {BaseService} from './BaseService';
 
 class Example {
-  id: string;
+  id: number;
   name: string;
 }
 

@@ -3,10 +3,6 @@ import {Website} from '../../global/model/website';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {BlocklistService} from '../../global/services/blocklist.service';
-import {AppState} from '../../app.module';
-import {select, Store} from '@ngrx/store';
-import {fromWebsiteActions} from '../../store/actions/website.actions';
-import {getWebsiteById} from '../../store/selectors/website.selector';
 
 const regExWebsite =
   new RegExp('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?');
@@ -17,7 +13,7 @@ const regExWebsite =
   styleUrls: ['./crud.component.scss']
 })
 export class CrudComponent implements OnInit {
-  website: Website;
+
   private id = null;
   crudForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -29,18 +25,7 @@ export class CrudComponent implements OnInit {
     )
   });
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private blocklistService: BlocklistService,
-    private store: Store<AppState>
-  ) {
-    this.route.params.subscribe(params => {
-      if (params.id) {
-        this.id = params.id;
-        this.store.dispatch(fromWebsiteActions.loadWebsite({id: params.id}));
-      }
-    });
+  constructor(private route: ActivatedRoute, private router: Router, private blocklistService: BlocklistService) {
   }
 
   ngOnInit(): void {
@@ -48,12 +33,13 @@ export class CrudComponent implements OnInit {
     const self = this;
     this.route.params.subscribe(params => {
       if (params.id) {
-        this.store.pipe(select(getWebsiteById())).subscribe((website) => {
-          self.crudForm?.get('name')?.setValue(website?.name);
-          self.crudForm?.get('website')?.setValue(website?.website);
+        self.blocklistService.getBlocklist(params.id).subscribe((blocklist: Website) => {
+          self.crudForm?.get('name')?.setValue(blocklist.name);
+          self.crudForm?.get('website')?.setValue(blocklist.website);
         });
       }
     });
+
   }
 
   saveWebsite(): void {
@@ -61,7 +47,7 @@ export class CrudComponent implements OnInit {
       this.crudForm.markAsTouched();
     } else {
       const param = this.id ? {id: this.id, ...this.crudForm.value} : this.crudForm.value;
-      this.store.dispatch(fromWebsiteActions.saveWebsite({data: param}));
+      this.blocklistService.saveOrUpdateElement(param);
       this.router.navigate(['']);
     }
   }
